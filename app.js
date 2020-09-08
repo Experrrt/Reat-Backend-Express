@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 app.use('/orders', orderRoutes)
-app.use('/products', productRoutes)
+app.use('/', productRoutes)
 
 mongoose.connect("mongodb+srv://front:kubo2013@cluster0.blcya.mongodb.net/<dbname>?retryWrites=true&w=majority"  )
 
