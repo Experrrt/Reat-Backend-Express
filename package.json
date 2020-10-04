@@ -11,10 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.10.2",
     "nodemailer": "^6.4.11",
     "nodemon": "^2.0.4",
-    "parser": "^0.1.4"
+    "parser": "^0.1.4",
+    "prompt-sync": "^4.2.0"
   }
 }
