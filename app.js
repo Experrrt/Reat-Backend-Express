@@ -1,9 +1,9 @@
 const express = require ('express')
 const app = express();
 var cors = require('cors')
-const productRoutes = require('./products');
-const orderRoutes = require('./orders');
-const emailRoutes =require('./emails')
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
+const emailRoutes =require('./routes/emails')
 const dotenv = require('dotenv');
 const  mongoose = require('mongoose');
 const bodyParser =require('body-parser')

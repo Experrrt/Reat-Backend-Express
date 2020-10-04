@@ -1,18 +1,20 @@
 const express = require ('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Email = require('./email');
+const Email = require('../models/email');
 const nodemailer = require('nodemailer');
-const email = require('./email');
-
+const email = require('../models/email');
+const dotenv = require('dotenv');
 
 var users=[]
+
+dotenv.config();
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'marcekland@gmail.com',
-        pass: 'kubo2013'
+        pass: process.env.PAS_EMAIL
     }
 });
 
