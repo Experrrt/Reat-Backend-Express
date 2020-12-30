@@ -1,21 +1,25 @@
-const express = require ('express')
+const express = require ('express');
 const app = express();
-var cors = require('cors')
+var cors = require('cors');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
-const emailRoutes =require('./routes/emails')
+const emailRoutes =require('./routes/emails');
 const dotenv = require('dotenv');
 const  mongoose = require('mongoose');
-const bodyParser =require('body-parser')
+const bodyParser =require('body-parser');
+const authRoute = require('./routes/auth');
 
 dotenv.config();
 
-app.use(cors())
+app.use(cors({origin:true,credentials:true}))
+
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-app.use('/orders', orderRoutes)
-app.use('/products', productRoutes)
-app.use('/', emailRoutes)
+
+app.use('/api/orders', orderRoutes)
+app.use('/api/products', productRoutes)
+app.use('/api', emailRoutes)
+app.use('/api/user', authRoute)
 
 mongoose.connect(process.env.DB_CONNECT,{ useNewUrlParser: true, useUnifiedTopology:true },()=>console.log('Connected to mongoose'))
 
