@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 const Order = require('../models/order.js');
-
+/////
 router.get('/', (req, res, next)=>{
     Order.find()
     .select('_ide quantity product')
