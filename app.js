@@ -8,11 +8,16 @@ const dotenv = require('dotenv');
 const  mongoose = require('mongoose');
 const bodyParser =require('body-parser');
 const authRoute = require('./routes/auth');
+const session = require('express-session')
 
 dotenv.config();
 
 app.use(cors({origin:true,credentials:true}))
-
+app.use(session({
+    secret:'secret-key',
+    resave:false,
+    saveUninitialized:true
+}))
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
@@ -20,6 +25,7 @@ app.use('/api/orders', orderRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api', emailRoutes)
 app.use('/api/user', authRoute)
+
 
 mongoose.connect(process.env.DB_CONNECT,{ useNewUrlParser: true, useUnifiedTopology:true },()=>console.log('Connected to mongoose'))
 

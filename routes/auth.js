@@ -2,7 +2,7 @@ const express = require ('express');
 const router = express.Router();
 
 const bcrypt = require('bcryptjs');
-
+const jwt = require('jsonwebtoken')
 const User = require('../models/user');
 
 const {registerValidation, loginValidation} = require('../validation')
@@ -39,17 +39,37 @@ router.post('/register', async (req, res)=>{
 router.post('/login', async (req,res)=>{
 
     const {error} =loginValidation(req.body);
-    if(error){console.log(error); return res.status(400).send(error.details[0].message);}
+    if(error){console.log(error); return res.send({message:'WE',problem:error.details[0].message})}
 
     const user = await User.findOne({email:req.body.email})
-    if(!user) return res.status(400).send('IE')
+    if(!user) return res.send({message:'IE',problem:'User not found'})
 
     const validPass = await bcrypt.compare(req.body.password, user.password);
-    if(!validPass)  return res.status(400).send('IP')
+    if(!validPass)  return res.send({message:'IP',problem:'Incorrect password'})
 
-    res.send('succes');
+    req.session.user=user
+    
+    res.json({message:'loggedin',user:{name:user.name,email:user.email,id:user._id}})
 })
 
+router.get('/logged_in',(req,res)=>{
+    if(!req.session.user){
+        return res.send('not good')
+    }
+    res.json({loggedIn:true,user:{
+        name:req.session.user.name,
+        email:req.session.user.email,
+        password:req.session.user.password
+    }})
+})
+
+router.delete('/logout',(req,res)=>{
+    if(!req.session.user){
+        return res.send({message:'No user is logged in'})
+    }
+    req.session.destroy()
+    res.send({message:'User has been loged out'})
+})
 
 router.delete('/', async(req,res)=>{
     await User.deleteMany({})
