@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const emails = require("../models/email");
 const dotenv = require("dotenv");
 const { emailValidation } = require("../validation");
+const verify = require("../auth/validation");
 
 dotenv.config();
 
@@ -59,7 +60,7 @@ function send() {
     });
 }
 
-router.post("/newsletter", async (req, res) => {
+router.post("/newsletter", verify, async (req, res) => {
   const { error } = emailValidation(req.body);
   if (error) {
     console.log(error);

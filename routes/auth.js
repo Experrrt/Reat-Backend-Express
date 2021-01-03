@@ -1,79 +1,108 @@
-const express = require ('express');
+const express = require("express");
 const router = express.Router();
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
-const User = require('../models/user');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const verify = require("../auth/validation");
 
-const {registerValidation, loginValidation} = require('../validation')
+const { registerValidation, loginValidation } = require("../validation");
 
-router.post('/register', async (req, res)=>{
+let token;
 
-  
-    const {error} =registerValidation(req.body);
-    if(error){console.log(error); return res.send({message:'WE',problem:error.details[0].message})}
-    
-    const exists = await User.findOne({email:req.body.email})
-    if(exists) return res.send({message:'WE',problem:'inuse'})
+router.post("/register", async (req, res) => {
+  const { error } = registerValidation(req.body);
+  if (error) {
+    console.log(error);
+    return res.send({ message: "WE", problem: error.details[0].message });
+  }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(req.body.password, salt);
+  const exists = await User.findOne({ email: req.body.email });
+  if (exists) return res.send({ message: "WE", problem: "inuse" });
 
-    const user = new User({
-        name:req.body.name,
-        email:req.body.email,
-        password: hashPassword
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+  const user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: hashPassword,
+  });
+
+  await user
+    .save()
+    .then((result) => {
+      console.log(result);
+      //req.session.user = user;
+      token = jwt.sign(
+        { name: user.name, email: user.email, id: user._id },
+        process.env.TOKEN_SECRET,
+        { expiresIn: "30m" }
+      );
+      res.header("auth-token", token).json({
+        message: "registered",
+        token: token,
+        user: { name: user.name, email: user.email, id: user._id },
+      });
+      // res.send('registered')
     })
-    
-    await user.save()
-    .then(result =>{
-        console.log(result)
-        res.json({message:'registered',user:{name:result.name,email:result.email,id:result._id}})
-        // res.send('registered')
-    }).catch(err => {
-        console.log(err)
-        res.status(400)
-    })
-})
+    .catch((err) => {
+      console.log(err);
+      res.status(400);
+    });
+});
 
-router.post('/login', async (req,res)=>{
+router.post("/login", async (req, res) => {
+  const { error } = loginValidation(req.body);
+  if (error) {
+    console.log(error);
+    return res.send({ message: "WE", problem: error.details[0].message });
+  }
 
-    const {error} =loginValidation(req.body);
-    if(error){console.log(error); return res.send({message:'WE',problem:error.details[0].message})}
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.send({ message: "IE", problem: "User not found" });
 
-    const user = await User.findOne({email:req.body.email})
-    if(!user) return res.send({message:'IE',problem:'User not found'})
+  const validPass = await bcrypt.compare(req.body.password, user.password);
+  if (!validPass)
+    return res.send({ message: "IP", problem: "Incorrect password" });
 
-    const validPass = await bcrypt.compare(req.body.password, user.password);
-    if(!validPass)  return res.send({message:'IP',problem:'Incorrect password'})
+  //req.session.user = user;
 
-    req.session.user=user
-    
-    res.json({message:'loggedin',user:{name:user.name,email:user.email,id:user._id}})
-})
+  token = jwt.sign(
+    { name: user.name, email: user.email, id: user._id },
+    process.env.TOKEN_SECRET,
+    { expiresIn: "30m" }
+  );
+  res.header("auth-token", token).json({
+    message: "loggedin",
+    token: token,
+    user: { name: user.name, email: user.email, id: user._id },
+  });
+});
 
-router.get('/logged_in',(req,res)=>{
-    if(!req.session.user){
-        return res.send('not good')
-    }
-    res.json({loggedIn:true,user:{
-        name:req.session.user.name,
-        email:req.session.user.email,
-        password:req.session.user.password
-    }})
-})
+router.get("/logged_in", verify, (req, res) => {
+  //   if (!req.session.user) {
+  //     return res.send("not good");
+  //   }
+  res.json({
+    loggedIn: true,
+    user: {
+      name: req.user.name,
+      email: req.user.email,
+      _id: req.user._id,
+    },
+  });
+});
 
-router.delete('/logout',(req,res)=>{
-    if(!req.session.user){
-        return res.send({message:'No user is logged in'})
-    }
-    req.session.destroy()
-    res.send({message:'User has been loged out'})
-})
+router.delete("/logout", verify, (req, res) => {
+  token = null;
+  res.send({ message: "User has been loged out" });
+});
 
-router.delete('/', async(req,res)=>{
-    await User.deleteMany({})
-    .then(result =>{console.log(result)})
-})
+router.delete("/", async (req, res) => {
+  await User.deleteMany({}).then((result) => {
+    console.log(result);
+  });
+});
 
 module.exports = router;
