@@ -5,7 +5,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const verify = require("../auth/validation");
-
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 const { registerValidation, loginValidation } = require("../validation");
 
 let token;
@@ -79,17 +80,43 @@ router.post("/login", async (req, res) => {
     user: { name: user.name, email: user.email, id: user._id },
   });
 });
+//[upload.single("image"), verify]
+router.post("/fromdata", [upload.single("image"), verify], async (req, res) => {
+  //console.log(req.file.buffer);
+  const buff = Buffer.from(req.file.buffer, "utf-8");
+  const base64 = buff.toString("base64");
+  User.collection
+    .updateOne(
+      { email: req.user.email },
+      {
+        $set: {
+          img: base64,
+        },
+      }
+    )
+    .then((res) => {
+      //console.log(res);
+    })
+    .catch((err) => {
+      //console.log(err);
+    });
+  //console.log(base64);
+  const user = await User.findOne({ email: req.user.email });
+  res.send(user);
+});
 
-router.get("/logged_in", verify, (req, res) => {
+router.get("/logged_in", [verify], async (req, res) => {
   //   if (!req.session.user) {
   //     return res.send("not good");
   //   }
+  const user = await User.findOne({ email: req.user.email });
   res.json({
     loggedIn: true,
     user: {
       name: req.user.name,
       email: req.user.email,
       _id: req.user._id,
+      img: user.img,
     },
   });
 });
