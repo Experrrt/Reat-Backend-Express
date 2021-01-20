@@ -126,6 +126,22 @@ router.delete("/logout", verify, (req, res) => {
   res.send({ message: "User has been loged out" });
 });
 
+router.post("/userFind", (req, res) => {
+  User.findById(req.body.id)
+    .exec()
+    .then((response) => {
+      res.send({
+        user: {
+          img: response.img,
+          name: response.name,
+        },
+      });
+    })
+    .catch((error) => {
+      res.send("DE");
+    });
+});
+
 router.delete("/", async (req, res) => {
   await User.deleteMany({}).then((result) => {
     console.log(result);
