@@ -24,6 +24,12 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    friends: {
+      type: Array,
+    },
+    friendRequests: {
+      type: Array,
+    },
     img: {
       type: String,
       default:

@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const authRoute = require("./routes/auth");
 const session = require("express-session");
-const multer = require("multer");
+const userRoute = require("./routes/user");
 
 dotenv.config();
 app.use(cors({ origin: true, credentials: true }));
@@ -26,7 +26,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api", emailRoutes);
-app.use("/api/user", authRoute);
+app.use("/api/user/auth", authRoute);
+app.use("/api/user", userRoute);
 
 mongoose.connect(
   process.env.DB_CONNECT,
