@@ -5,8 +5,6 @@ const User = require("../models/user");
 const verify = require("../auth/validation");
 const multer = require("multer");
 const { ObjectID } = require("mongoose").Types.ObjectId;
-const user = require("../models/user");
-const { response } = require("express");
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/fromdata", [upload.single("image"), verify], async (req, res) => {
