@@ -32,10 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     img: {
       type: String,
-    },
-    dac: {
-      type: String,
-      default: "dasdasdaddsadasd",
+      default: "daco",
     },
   },
   { versionKey: false }
