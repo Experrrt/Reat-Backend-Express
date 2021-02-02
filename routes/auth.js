@@ -77,6 +77,7 @@ router.post("/login", async (req, res) => {
 
 router.get("/logged_in", [verify], async (req, res) => {
   const user = await User.findOne({ email: req.user.email });
+  console.log(user);
   res.json({
     loggedIn: true,
     user: {
@@ -84,6 +85,7 @@ router.get("/logged_in", [verify], async (req, res) => {
       email: req.user.email,
       id: req.user.id,
       img: user.img,
+      dac: user.dac,
       friends: user.friends,
       friendRequests: user.friendRequests,
     },
