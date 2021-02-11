@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const verify = require("../auth/validation");
 const { registerValidation, loginValidation } = require("../validation");
-const { defaultImg } = require("../auth/defaultimg");
 
 let token;
 
@@ -78,9 +77,6 @@ router.post("/login", async (req, res) => {
 
 router.get("/logged_in", [verify], async (req, res) => {
   const user = await User.findOne({ email: req.user.email });
-  // console.log(defaultImg);
-  // console.log(user);
-  // console.log(req.user.email);
   res.json({
     loggedIn: true,
     user: {
@@ -88,7 +84,6 @@ router.get("/logged_in", [verify], async (req, res) => {
       email: req.user.email,
       id: req.user.id,
       img: user.img,
-      dac: user.dac,
       friends: user.friends,
       friendRequests: user.friendRequests,
     },
