@@ -13,10 +13,11 @@ router.post("/register", async (req, res) => {
   const { error } = registerValidation(req.body);
   if (error) {
     console.log(error);
-    return res.send({ message: "WE", problem: error.details[0].message });
+    return res.send({ message: "IE", problem: error.details });
   }
   const exists = await User.findOne({ email: req.body.email });
-  if (exists) return res.send({ message: "WE", problem: "inuse" });
+  if (exists)
+    return res.send({ message: "IU", problem: "Email alredy in use" });
 
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, salt);
@@ -80,12 +81,14 @@ router.get("/logged_in", [verify], async (req, res) => {
   res.json({
     loggedIn: true,
     user: {
-      name: req.user.name,
-      email: req.user.email,
-      id: req.user.id,
+      name: user.name,
+      email: user.email,
+      id: user.id,
       img: user.img,
       friends: user.friends,
       friendRequests: user.friendRequests,
+      desc: user.desc,
+      imgBack: user.imgBack,
     },
   });
 });

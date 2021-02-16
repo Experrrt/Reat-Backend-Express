@@ -7,16 +7,49 @@ const multer = require("multer");
 const { ObjectID } = require("mongoose").Types.ObjectId;
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post("/fromdata", [upload.single("image"), verify], async (req, res) => {
-  const buff = Buffer.from(req.file.buffer, "utf-8");
-  const base64 = buff.toString("base64");
+router.post("/fromdata", [upload.array("files"), verify], async (req, res) => {
+  let model = { name: req.body.name, desc: req.body.desc };
+  if (req.files[0] != null && req.body.type == "b") {
+    const base641 = Buffer.from(req.files[0].buffer, "utf-8").toString(
+      "base64"
+    );
+    model = {
+      imgBack: base641,
+      name: req.body.name,
+      desc: req.body.desc,
+    };
+  } else if (req.files[0] != null && req.body.type == "p") {
+    const base642 = Buffer.from(req.files[0].buffer, "utf-8").toString(
+      "base64"
+    );
+    model = {
+      img: base642,
+      name: req.body.name,
+      desc: req.body.desc,
+    };
+  } else if (
+    req.files[1] != null &&
+    req.files[0] != null &&
+    req.body.type == "pb"
+  ) {
+    const base641 = Buffer.from(req.files[0].buffer, "utf-8").toString(
+      "base64"
+    );
+    const base642 = Buffer.from(req.files[1].buffer, "utf-8").toString(
+      "base64"
+    );
+    model = {
+      imgBack: base641,
+      img: base642,
+      name: req.body.name,
+      desc: req.body.desc,
+    };
+  }
   User.collection
     .updateOne(
       { _id: ObjectID.createFromHexString(req.user.id) },
       {
-        $set: {
-          img: base64,
-        },
+        $set: model,
       }
     )
     .then(() => {
