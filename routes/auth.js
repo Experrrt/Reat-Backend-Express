@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const verify = require("../auth/validation");
-const { registerValidation, loginValidation } = require("../validation");
+const { registerValidation, loginValidation } = require("../utils/validation");
 
 let token;
 
@@ -89,6 +89,7 @@ router.get("/logged_in", [verify], async (req, res) => {
       friendRequests: user.friendRequests,
       desc: user.desc,
       imgBack: user.imgBack,
+      rooms: user.rooms,
     },
   });
 });

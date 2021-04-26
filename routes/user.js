@@ -90,7 +90,10 @@ router.post("/userFind", (req, res) => {
         user: {
           img: response.img,
           name: response.name,
+          imgBack: response.imgBack,
+          desc: response.desc,
           id: response._id,
+          friendRequests: response.friendRequests,
         },
       });
     })

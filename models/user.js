@@ -41,6 +41,9 @@ const userSchema = new mongoose.Schema(
     desc: {
       type: String,
     },
+    rooms: {
+      type: Array,
+    },
   },
   { versionKey: false }
 );

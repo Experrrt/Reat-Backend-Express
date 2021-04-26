@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const emails = require("../models/email");
 const dotenv = require("dotenv");
-const { emailValidation } = require("../validation");
+const { emailValidation } = require("../utils/validation");
 const verify = require("../auth/validation");
 
 dotenv.config();
