@@ -15,6 +15,7 @@ const { ObjectID } = require("mongoose").Types.ObjectId;
 io.on("connection", (socket) => {
   socket.on("joinRoom", ({ name, room, _id, img, last }) => {
     addUser(socket.id, name, room, _id, img);
+
     console.log("New connection");
     console.log("Joinded room: " + room);
 
@@ -24,7 +25,6 @@ io.on("connection", (socket) => {
     });
 
     socket.join(room);
-    const thisRoom = Room.findById(room);
     socket.emit("allertMessage", {
       message: "Welcome " + name,
     });

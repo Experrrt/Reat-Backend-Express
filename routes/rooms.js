@@ -103,7 +103,7 @@ router.post("/getRoomContent", verify, async (req, res) => {
   } else {
     lastIndex = room.messages.length - 20;
   }
-  // console.log(room.messages.slice(lastIndex, room.messages.length));
+
   res.send({
     messages:
       room.messages.length < 20
